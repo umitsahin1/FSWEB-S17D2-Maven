@@ -56,20 +56,26 @@ public class DeveloperController {
     @PostMapping
     public ResponseEntity<Developer>addDeveloper(@RequestBody Developer developer) {
         Developer createdDeveloper;
+        double taxRate = 0.0;
         switch (developer.getExperience()) {
             case JUNIOR:
+                taxRate = taxable.getSimpleTaxRate();
+                developer.setSalary(developer.getSalary() - (developer.getSalary() * taxRate / 100));
                 createdDeveloper = new JuniorDeveloper(developer.getId(), developer.getName(), developer.getSalary());
                 break;
             case MID:
+                taxRate = taxable.getMiddleTaxRate();
+                developer.setSalary(developer.getSalary() - (developer.getSalary() * taxRate / 100));
                 createdDeveloper = new MidDeveloper(developer.getId(), developer.getName(), developer.getSalary());
                 break;
             case SENIOR:
+                taxRate = taxable.getUpperTaxRate();
+                developer.setSalary(developer.getSalary() - (developer.getSalary() * taxRate / 100));
                 createdDeveloper = new SeniorDeveloper(developer.getId(), developer.getName(), developer.getSalary());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown experience type");
         }
-
 
         return new ResponseEntity<>(createdDeveloper, HttpStatus.CREATED); // 201 Created
     }
